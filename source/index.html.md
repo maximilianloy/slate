@@ -6,10 +6,11 @@ language_tabs: # must be one of https://git.io/vQNgJ
   - ruby
   - python
   - javascript
+  - java
 
-toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
-  - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
+# toc_footers:
+#   - <a href='#'>Sign Up for a Developer Key</a>
+#   - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
 
 includes:
   - errors
@@ -19,80 +20,105 @@ search: true
 
 # Introduction
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+Welcome to the SnowSafe API!
 
-We have language bindings in Shell, Ruby, Python, and JavaScript! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
 
-This example API documentation page was created with [Slate](https://github.com/lord/slate). Feel free to edit it and use it as a base for your own API's documentation.
+<aside class="notice">
+Find the remaining development files in the Dropbox folder:
+</aside>
+
+[Dropbox folder](https://www.dropbox.com/sh/kvjnrham8ttptbp/AABwtrTEU9Goox7zjcX6hOQ3a?dl=0)
 
 # Authentication
 
 > To authorize, use this code:
 
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-```
-
 ```shell
 # With shell, you can just pass the correct header with each request
 curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
+  -H "api-key: <your-api-key>"
 ```
 
-```javascript
-const kittn = require('kittn');
+> Make sure to replace `<your-api-key>` with your API key.
 
-let api = kittn.authorize('meowmeowmeow');
-```
+SnowSafe uses API keys to allow access to the API. You can register a new SnowSafe API key by [emailing us](mailto:max@snowsafe.at).
 
-> Make sure to replace `meowmeowmeow` with your API key.
+SnowSafe expects for the API key to be included in all API requests to the server in a header that looks like the following:
 
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
+`API-Key: your-api-key`
 
 <aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
+You must replace <code>your-api-key</code> with your organisations API key.
 </aside>
 
-# Kittens
+# Bulletins
 
-## Get All Kittens
+## Get All Bulletins
 
 ```ruby
-require 'kittn'
+require 'uri'
+require 'net/http'
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
+url = URI("http://admin.snowsafe.at/api/bulletins")
+
+http = Net::HTTP.new(url.host, url.port)
+
+request = Net::HTTP::Get.new(url)
+request["accept-encoding"] = 'gzip'
+request["api-key"] = '<your-api-key>'
+
+response = http.request(request)
+puts response.read_body
 ```
 
 ```python
-import kittn
+import requests
 
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
+url = "http://admin.snowsafe.at/api/bulletins"
+
+payload = ""
+headers = {
+    'accept-encoding': "gzip",
+    'api-key': "<your-api-key>"
+    }
+
+response = requests.request("GET", url, data=payload, headers=headers)
+
+print(response.text)
 ```
 
 ```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
+curl --request GET \
+  --url http://admin.snowsafe.at/api/bulletins \
+  --header 'accept-encoding: gzip' \
+  --header 'api-key: <your-api-key>'
 ```
 
 ```javascript
-const kittn = require('kittn');
+var data = null;
 
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
+var xhr = new XMLHttpRequest();
+xhr.withCredentials = true;
+
+xhr.addEventListener("readystatechange", function () {
+  if (this.readyState === this.DONE) {
+    console.log(this.responseText);
+  }
+});
+
+xhr.open("GET", "http://admin.snowsafe.at/api/bulletins");
+xhr.setRequestHeader("accept-encoding", "gzip");
+xhr.setRequestHeader("api-key", "<your-api-key>");
+
+xhr.send(data);
+```
+
+```java
+HttpResponse<String> response = Unirest.get("http://admin.snowsafe.at/api/bulletins")
+  .header("accept-encoding", "gzip")
+  .header("api-key", "<your-api-key>")
+  .asString();
 ```
 
 > The above command returns JSON structured like this:
@@ -100,140 +126,173 @@ let kittens = api.kittens.get();
 ```json
 [
   {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
+    "id": "AT2",
+    "language": "de",
+    "author": "wertl",
+    "published": "2019-02-14T17:10:00+01:00",
+    "validFrom": "2019-02-15T00:00:00+01:00",
+    "validTill": "2019-02-15T23:59:00+01:00",
+    "regions": {
+      "AT2R1": {
+        "..."
+      }
+    }
   },
   {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+    "id": "AT5",
+    "language": "de",
+    "author": "zenke",
+    "published": "2019-02-14T17:10:00+01:00",
+    "validFrom": "2019-02-15T00:00:00+01:00",
+    "validTill": "2019-02-15T23:59:00+01:00",
+    "regions": {
+      "AT5R1": {
+        "..."
+      }
+    }
   }
 ]
 ```
 
-This endpoint retrieves all kittens.
+This endpoint retrieves all bulletins available to the API key. The returned bulletins are the ones valid at the time of the request.
 
 ### HTTP Request
 
-`GET http://example.com/api/kittens`
+`GET http://admin.snowsafe.at/api/bulletins`
 
-### Query Parameters
+## Bulletin Format
 
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
-
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
-
-## Get a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
-
-> The above command returns JSON structured like this:
 
 ```json
 {
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
+  "id": "AT2",
+  "language": "de",
+  "author": "wertl",
+  "published": "2019-02-14T17:10:00+01:00",
+  "validFrom": "2019-02-15T00:00:00+01:00",
+  "validTill": "2019-02-15T23:59:00+01:00",
+  "regions": {
+    "AT2R1": {
+      "am": {
+        "upperLevel": 2,
+        "upperText": "über 2000m",
+        "lowerLevel": 1,
+        "lowerText": "unter 2000m",
+        "problems": [
+          {
+            "type": "drifting snow",
+            "lowerRange": true,
+            "lowerBorder": "unter 2600m",
+            "expositions": [
+              "N",
+              "NE",
+              "E",
+              "SE",
+              "S",
+              "SW",
+              "W",
+              "NW"
+            ]
+          },
+          {
+            "type": "wet snow",
+            "expositions": [
+              "E",
+              "SE",
+              "S",
+              "SW",
+              "W"
+            ]
+          }
+        ]
+      },
+      "descriptions": [
+        {
+          "heading": "Gefahrenbeurteilung",
+          "text": "NW: In höheren Lagen werden ..."
+        },
+        {
+          "heading": "Schneedeckenaufbau",
+          "text": "In hohen Lagen der ..."
+        },
+        {
+          "heading": "Wetter",
+          "text": "Ein Hochdruckgebiet, ..."
+        },
+        {
+          "heading": "Tendenz",
+          "text": "Auch am Samstag ist ..."
+        }
+      ],
+      "headline": "Im Tagesverlauf steigt die Lawinengefahr"
+    }
+  }
 }
 ```
 
-This endpoint retrieves a specific kitten.
+Each bulletin consist of general information which is valid for all of its regions and region specific data which might be different for each region.
 
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
+### Bulletin Parameters
 
-### HTTP Request
+Parameter | Optional | Description
+--------- | -------- | -----------
+id | No | Province identifier (ISO 3166 code). See at-v1-snowsafe-config.json for the ID <-> region name mapping.
+language | No | ISO language code ("de", "en", "it", ...)
+author | Yes | Bulletin author
+published | No | Date when the bulletin was published by the warning service
+validFrom | No | Date when the bulletin validity starts.
+validTill | No | Date when the bulletin validity ends.
+regions | No | Map of regions and their specific bulletin
+am | No | Data for the first dayhalf (if "pm" exists) or the whole day (if no "pm")
+pm | Yes | Data for the second dayhalf
+lowerLevel | No | Danger level for the lower mountain half (if "upperLevel" exists) or the whole mountain (if no "upperLevel")
+upperLevel | No | Danger level for the upper mountain half
+problems | Yes | List of avalanche problems. Limited to two problems (per day half)
+type | No | The avalanche problem type. Possible values: "drifting snow", "new snow", "wet snow", "old snow", "gliding snow", "favourable situation"
+lowerRange | Yes | true if the lower mountain range is affected.
+upperRange | Yes | true if the upper mountain range is affected.
+lowerBorder | Yes | Short description for the lowerRange height border.
+expositions | Yes | List of affected expositions for the specific problem. Possible values: "N", "NE", "E", "SE", "S", "SW", "W", "NW"
+descriptions | No | A list of heading + text segments. Headings are not standardised.
+headline | No | A short danger headline which should be printed at the very top.
 
-`GET http://example.com/kittens/<ID>`
+## Format Examples
 
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
-
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -X DELETE
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
-```
-
-> The above command returns JSON structured like this:
+### AM/PM and upper/lower Danger Levels
 
 ```json
 {
-  "id": 2,
-  "deleted" : ":("
+  "id": "AT2",
+  "language": "de",
+  "author": "wertl",
+  "published": "2019-02-14T17:10:00+01:00",
+  "validFrom": "2019-02-15T00:00:00+01:00",
+  "validTill": "2019-02-15T23:59:00+01:00",
+  "regions": {
+    "AT2R1": {
+      "am": {
+        "upperLevel": 2,
+        "upperText": "über 2000m",
+        "lowerLevel": 1,
+        "lowerText": "unter 2000m"
+      },
+      "pm": {
+        "upperLevel": 3,
+        "upperText": "über 2000m",
+        "lowerLevel": 2,
+        "lowerText": "unter 2000m"
+      },
+      "headline": "Im Tagesverlauf steigt die Lawinengefahr",
+      "..."
+    },
+    "..."
+  }
 }
 ```
 
-This endpoint deletes a specific kitten.
+There can be up to 4 different danger levels in a region on a single day:
 
-### HTTP Request
+* Difference between AM and PM day halfs
+* Difference between upper and lower mountain halfs
 
-`DELETE http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to delete
-
+"am" is always set, whereas "pm" is only available when the conditions change in the afternoon.
